@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "62264590763",
+    "project_id": "hopsta-demo",
+    "storage_bucket": "hopsta-demo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:62264590763:android:10912f6f292c2468ead2ee",
+        "android_client_info": {
+          "package_name": "uk.dotq.hopsta_demo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "62264590763-oa4trboiue07f1a4vavvqh5fgtv3m71m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAy9QICInLmQ0yKpbDR5Xa2PItxYZcup2I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "62264590763-oa4trboiue07f1a4vavvqh5fgtv3m71m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
