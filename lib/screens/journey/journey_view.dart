@@ -1,8 +1,10 @@
+import 'package:coupon_uikit/coupon_uikit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:hopsta_demo/shared/ui_helpers.dart';
 import 'package:hopsta_demo/widgets/custom_button.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:lottie/lottie.dart' as Lottie;
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:stacked/stacked.dart';
 
@@ -63,6 +65,31 @@ class JourneyView extends StatelessWidget {
                       onSourceTapped: null,
                     ),
                   ],
+                  layers: [
+                    PolylineLayerOptions(
+                      polylineCulling: false,
+                      polylines: [
+                        Polyline(
+                          strokeWidth: 5.0,
+                          points: model.locationService.positions,
+                          color: Colors.blue,
+                        ),
+                      ],
+                    ),
+                    MarkerLayerOptions(
+                        markers: model.locationService.positions
+                            .map((e) => Marker(
+                                point: e,
+                                builder: (context) => Container(
+                                      width: 10.0,
+                                      height: 10.0,
+                                      decoration: const BoxDecoration(
+                                        color: Colors.red,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    )))
+                            .toList()),
+                  ],
                   children: [
                     TileLayerWidget(
                       options: TileLayerOptions(
@@ -71,7 +98,12 @@ class JourneyView extends StatelessWidget {
                         maxZoom: 19,
                       ),
                     ),
-                    LocationMarkerLayerWidget()
+                    LocationMarkerLayerWidget(
+                      plugin: const LocationMarkerPlugin(
+                        centerOnLocationUpdate: CenterOnLocationUpdate.always,
+                        turnOnHeadingUpdate: TurnOnHeadingUpdate.never,
+                      ),
+                    )
                   ],
                 ),
                 ...getJourneyStage(model, context)
@@ -230,6 +262,320 @@ class JourneyView extends StatelessWidget {
                     ],
                   ),
                 ),
+              ))
+        ];
+      case 5:
+        return [
+          Positioned(
+              bottom: 0,
+              child: Container(
+                width: screenWidth(context),
+                decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30))),
+                child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      children: [
+                        Center(
+                          child: Text(
+                            'Finding best ticket options...',
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Lottie.Lottie.asset('assets/animations/searching.json'),
+                      ],
+                    )),
+              ))
+        ];
+      case 6:
+        const Color primaryColor = Color.fromARGB(255, 203, 208, 243);
+        const Color secondaryColor = Color.fromARGB(255, 78, 110, 179);
+        return [
+          Positioned(
+              bottom: 0,
+              child: Container(
+                width: screenWidth(context),
+                decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30))),
+                child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Choose ticket option:',
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
+                        ),
+                        verticalSpaceMedium,
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                          child: GestureDetector(
+                            onTap: () => model.ticketPicked(),
+                            child: CouponCard(
+                              height: 150,
+                              backgroundColor: primaryColor,
+                              curveAxis: Axis.vertical,
+                              firstChild: Container(
+                                decoration: const BoxDecoration(
+                                  color: secondaryColor,
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Center(
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: const [
+                                            Text(
+                                              '£15.50',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    const Divider(
+                                        color: Colors.white54, height: 0),
+                                    const Expanded(
+                                      child: Center(
+                                        child: Text(
+                                          'SINGLE',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              secondChild: Container(
+                                width: double.maxFinite,
+                                padding: const EdgeInsets.all(18),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: const [
+                                    Text(
+                                      'From',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                    Text(
+                                      'MAIDSTONE EAST',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: secondaryColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      'To',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                    Text(
+                                      'BARMING',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: secondaryColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Text(
+                                      'Valid 22 Aug 2022 only',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.black45,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        verticalSpaceSmall,
+                        GestureDetector(
+                          onTap: () => model.ticketPicked(),
+                          child: Container(
+                            padding: EdgeInsets.all(5.0),
+                            decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(5)),
+                            child: Column(
+                              children: [
+                                Text('BEST VALUE',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold)),
+                                verticalSpaceTiny,
+                                CouponCard(
+                                  height: 150,
+                                  backgroundColor: primaryColor,
+                                  curveAxis: Axis.vertical,
+                                  firstChild: Container(
+                                    decoration: const BoxDecoration(
+                                      color: secondaryColor,
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: Center(
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: const [
+                                                Text(
+                                                  '£17.70',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 24,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        const Divider(
+                                            color: Colors.white54, height: 0),
+                                        const Expanded(
+                                          child: Center(
+                                            child: Text(
+                                              'OFF-PEAK RETURN',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  secondChild: Container(
+                                    width: double.maxFinite,
+                                    padding: const EdgeInsets.all(18),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: const [
+                                        Text(
+                                          'From',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                        Text(
+                                          'MAIDSTONE STATIONS',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: secondaryColor,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: 4),
+                                        Text(
+                                          'To',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                        Text(
+                                          'BARMING',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: secondaryColor,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Spacer(),
+                                        Text(
+                                          'Valid 22 Aug 2022 only',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: Colors.black45,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    )),
+              ))
+        ];
+      case 7:
+        return [
+          Positioned(
+              bottom: 0,
+              child: Container(
+                width: screenWidth(context),
+                decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30))),
+                child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      children: [
+                        Center(
+                          child: Text(
+                            'Processing payment...',
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Lottie.Lottie.asset('assets/animations/payment.json',
+                            repeat: false),
+                      ],
+                    )),
               ))
         ];
       default:

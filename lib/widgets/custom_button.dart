@@ -8,8 +8,15 @@ class CustomButton extends StatelessWidget {
   final Function()? onPressed;
   final bool isBusy;
   final BuildContext rootContext;
+  final double minHeight;
+  final double? minWidth;
   CustomButton(this.label, this.rootContext,
-      {this.key, this.style, this.onPressed, this.isBusy = false});
+      {this.key,
+      this.style,
+      this.onPressed,
+      this.isBusy = false,
+      this.minHeight = 80,
+      this.minWidth});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +42,8 @@ class CustomButton extends StatelessWidget {
                   padding: const EdgeInsets.all(16.0),
                   primary: Colors.white,
                   textStyle: const TextStyle(fontSize: 20),
-                  minimumSize: Size(twoThirdsScreenWidth(context), 80),
+                  minimumSize: Size(
+                      minWidth ?? twoThirdsScreenWidth(context), minHeight),
                 ),
             onPressed: onPressed,
             child: (isBusy)

@@ -6,15 +6,20 @@ import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:hopsta_demo/app/app.locator.dart';
 import 'package:hopsta_demo/models/station.dart';
 import 'package:hopsta_demo/services/firestore_service.dart';
+import 'package:hopsta_demo/services/location_service.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 
 class HopstaService {
   final HopstaFirestoreService _firestoreService =
       locator<HopstaFirestoreService>();
+  final HopstaLocationService _locationService =
+      locator<HopstaLocationService>();
 
   List<TrainStation> stations = [];
 
   bool initialised = false;
+
+  String? currentJourneyId;
 
   HopstaService() {
     debugPrint('Init HopstaService');
@@ -29,7 +34,8 @@ class HopstaService {
   }
 
   initService() async {
-    await BackgroundGeolocation.requestPermission();
+    await _locationService.requestLocationPermission();
+    //await _locationService.requestNotificationPermission();
 
     var currentLoc = await BackgroundGeolocation.getCurrentPosition();
     var geoPoint = _firestoreService.geo.point(

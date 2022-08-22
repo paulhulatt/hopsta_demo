@@ -6,6 +6,7 @@ import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:hopsta_demo/app/app.locator.dart';
 import 'package:hopsta_demo/services/firestore_service.dart';
 import 'package:hopsta_demo/services/hopsta_service.dart';
+import 'package:hopsta_demo/services/location_service.dart';
 import 'package:location_distance_calculator/location_distance_calculator.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -15,6 +16,8 @@ class JourneyViewModel extends BaseViewModel {
   final HopstaFirestoreService _firestoreService =
       locator<HopstaFirestoreService>();
   final NavigationService _navService = locator<NavigationService>();
+  final HopstaLocationService locationService =
+      locator<HopstaLocationService>();
 
   int journeyStage = 0;
   GeoFirePoint? currentLocation;
@@ -32,6 +35,10 @@ class JourneyViewModel extends BaseViewModel {
 
     mapController.onReady.then((value) {
       mapReady = true;
+      notifyListeners();
+    });
+
+    locationService.addListener(() {
       notifyListeners();
     });
 
@@ -73,11 +80,17 @@ class JourneyViewModel extends BaseViewModel {
     await _hopstaService.resetBrightness();
 
     journeyStage = 3;
+
+    locationService.startTracking(currentLocation!);
+
     notifyListeners();
   }
 
   completeJourney() async {
     journeyStage = 4;
+
+    locationService.stopTracking();
+
     notifyListeners();
 
     await _hopstaService.maxBrightness();
@@ -89,6 +102,20 @@ class JourneyViewModel extends BaseViewModel {
     journeyStage = 5;
     notifyListeners();
 
-    _navService.back();
+    Future.delayed(Duration(seconds: 6), () {
+      journeyStage = 6;
+      notifyListeners();
+    });
+
+    //_navService.back();
+  }
+
+  ticketPicked() async {
+    journeyStage = 7;
+    notifyListeners();
+
+    Future.delayed(Duration(seconds: 7), () {
+      _navService.back();
+    });
   }
 }

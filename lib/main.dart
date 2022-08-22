@@ -1,9 +1,16 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hopsta_demo/app/app.locator.dart';
+import 'package:hopsta_demo/services/firestore_service.dart';
+import 'package:hopsta_demo/services/location_service.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 import 'app/app.router.dart';
+
+/* void _backgroundCallback() =>
+    BackgroundLocationTrackerManager.handleBackgroundUpdated(
+        (data) async => Repo().update(data)); */
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,6 +18,23 @@ Future main() async {
   await Firebase.initializeApp();
 
   await setupLocator();
+
+  /* await BackgroundLocationTrackerManager.initialize(
+    _backgroundCallback,
+    config: const BackgroundLocationTrackerConfig(
+      loggingEnabled: true,
+      androidConfig: AndroidConfig(
+        notificationIcon: 'explore',
+        trackingInterval: Duration(seconds: 4),
+        distanceFilterMeters: 5,
+      ),
+      iOSConfig: IOSConfig(
+        activityType: ActivityType.FITNESS,
+        distanceFilterMeters: 5,
+        restartAfterKill: true,
+      ),
+    ),
+  ); */
 
   runApp(const MyApp());
 }
@@ -117,3 +141,25 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+/* class Repo {
+  static Repo? _instance;
+  final HopstaLocationService _hopstaLocationService =
+      locator<HopstaLocationService>();
+  final HopstaFirestoreService _firestoreService =
+      locator<HopstaFirestoreService>();
+
+  Repo._();
+
+  factory Repo() => _instance ??= Repo._();
+
+  void update(BackgroundLocationUpdateData data) async {
+    final journeyId = _hopstaLocationService.journeyId ?? 'not-found';
+    final text =
+        'Location Update: Lat: ${data.lat} Lon: ${data.lon} for journey: $journeyId';
+    print(text); // ignore: avoid_print
+    await _firestoreService.setJourneyLocationPoint(
+        journeyId, LatLng(data.lat, data.lon));
+    _hopstaLocationService.sendNotification(text);
+  }
+} */

@@ -12,19 +12,25 @@ import 'package:stacked_services/stacked_services.dart';
 
 import '../screens/auth/auth_view.dart';
 import '../screens/entry.dart';
+import '../screens/history/history_view.dart';
 import '../screens/home/home_view.dart';
 import '../screens/journey/journey_view.dart';
+import '../screens/profile/profile_view.dart';
 
 class Routes {
   static const String entryView = '/';
   static const String authView = '/auth-view';
   static const String homeView = '/home-view';
   static const String journeyView = '/journey-view';
+  static const String historyView = '/history-view';
+  static const String profileView = '/profile-view';
   static const all = <String>{
     entryView,
     authView,
     homeView,
     journeyView,
+    historyView,
+    profileView,
   };
 }
 
@@ -36,6 +42,8 @@ class StackedRouter extends RouterBase {
     RouteDef(Routes.authView, page: AuthView),
     RouteDef(Routes.homeView, page: HomeView),
     RouteDef(Routes.journeyView, page: JourneyView),
+    RouteDef(Routes.historyView, page: HistoryView),
+    RouteDef(Routes.profileView, page: ProfileView),
   ];
   @override
   Map<Type, StackedRouteFactory> get pagesMap => _pagesMap;
@@ -61,6 +69,18 @@ class StackedRouter extends RouterBase {
     JourneyView: (data) {
       return MaterialPageRoute<dynamic>(
         builder: (context) => const JourneyView(),
+        settings: data,
+      );
+    },
+    HistoryView: (data) {
+      return MaterialPageRoute<dynamic>(
+        builder: (context) => const HistoryView(),
+        settings: data,
+      );
+    },
+    ProfileView: (data) {
+      return MaterialPageRoute<dynamic>(
+        builder: (context) => const ProfileView(),
         settings: data,
       );
     },
@@ -129,6 +149,38 @@ extension NavigatorStateExtension on NavigationService {
   }) async {
     return navigateTo(
       Routes.journeyView,
+      id: routerId,
+      preventDuplicates: preventDuplicates,
+      parameters: parameters,
+      transition: transition,
+    );
+  }
+
+  Future<dynamic> navigateToHistoryView({
+    int? routerId,
+    bool preventDuplicates = true,
+    Map<String, String>? parameters,
+    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
+        transition,
+  }) async {
+    return navigateTo(
+      Routes.historyView,
+      id: routerId,
+      preventDuplicates: preventDuplicates,
+      parameters: parameters,
+      transition: transition,
+    );
+  }
+
+  Future<dynamic> navigateToProfileView({
+    int? routerId,
+    bool preventDuplicates = true,
+    Map<String, String>? parameters,
+    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
+        transition,
+  }) async {
+    return navigateTo(
+      Routes.profileView,
       id: routerId,
       preventDuplicates: preventDuplicates,
       parameters: parameters,

@@ -17,7 +17,14 @@ class AuthViewModel extends BaseViewModel {
   String? email;
   String? password;
 
+  bool isSignup = false;
+
   Future handleStartup() async {}
+
+  toggleLoginSignup() {
+    isSignup = !isSignup;
+    notifyListeners();
+  }
 
   doLogin() async {
     if (!busy('loginButton')) {
@@ -31,6 +38,27 @@ class AuthViewModel extends BaseViewModel {
         } else {
           _dialogService.showDialog(description: 'Unknown user or password');
           setBusyForObject('loginButton', false);
+        }
+      } else {
+        validate = AutovalidateMode.onUserInteraction;
+        notifyListeners();
+      }
+    }
+  }
+
+  doSignup() async {
+    if (!busy('signupButton')) {
+      if (formKey.currentState!.validate()) {
+        setBusyForObject('signupButton', true);
+        formKey.currentState!.save();
+        var _result = await _firebaseAuth.createAccountWithEmail(
+            email: email!, password: password!);
+        if (_result.user != null) {
+          _navService.replaceWith(Routes.homeView);
+        } else {
+          _dialogService.showDialog(
+              description: 'Signup error\n${_result.errorMessage}');
+          setBusyForObject('signupButton', false);
         }
       } else {
         validate = AutovalidateMode.onUserInteraction;

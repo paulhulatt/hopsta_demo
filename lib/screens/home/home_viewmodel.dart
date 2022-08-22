@@ -19,6 +19,20 @@ class HomeViewModel extends BaseViewModel {
     }
   }
 
+  doProfile() async {
+    await _navService.navigateToProfileView();
+
+    notifyListeners();
+  }
+
+  doHistory() async {
+    _navService.navigateToHistoryView();
+  }
+
+  String? get userProfileImage {
+    return _firebaseAuth.currentUser?.photoURL;
+  }
+
   startJourney() async {
     _navService.navigateToJourneyView();
   }

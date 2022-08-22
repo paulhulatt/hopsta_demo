@@ -12,12 +12,10 @@ class TrainStation {
 
   TrainStation({this.id, this.name, this.location});
 
-  final HopstaFirestoreService _firestoreService =
-      locator<HopstaFirestoreService>();
-
   Map<String, dynamic> toFirestore() {
-    GeoFirePoint _stationLocation = _firestoreService.geo
-        .point(latitude: location!.latitude, longitude: location!.longitude);
+    GeoFlutterFire geo = GeoFlutterFire();
+    GeoFirePoint _stationLocation =
+        geo.point(latitude: location!.latitude, longitude: location!.longitude);
 
     return {'name': name, 'location': _stationLocation.data};
   }

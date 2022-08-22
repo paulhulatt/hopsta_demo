@@ -12,6 +12,7 @@ import 'package:stacked_services/stacked_services.dart';
 
 import '../services/firestore_service.dart';
 import '../services/hopsta_service.dart';
+import '../services/location_service.dart';
 import '../services/shared_preferences_service.dart';
 
 final locator = StackedLocator.instance;
@@ -27,6 +28,7 @@ Future<void> setupLocator(
   locator.registerSingleton(DialogService());
   locator.registerSingleton(FirebaseAuthenticationService());
   locator.registerSingleton(HopstaFirestoreService());
+  locator.registerSingleton(HopstaLocationService());
   locator.registerSingleton(HopstaService());
   final sharedPreferencesService = await SharedPreferencesService.getInstance();
   locator.registerSingleton(sharedPreferencesService);

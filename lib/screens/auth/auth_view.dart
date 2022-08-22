@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hopsta_demo/shared/helper.dart';
 import 'package:hopsta_demo/shared/ui_helpers.dart';
+import 'package:hopsta_demo/widgets/custom_button.dart';
 import 'package:stacked/stacked.dart';
 
 import 'auth_viewmodel.dart';
@@ -80,44 +81,18 @@ class AuthView extends StatelessWidget {
                             borderRadius: BorderRadius.circular(25.0),
                           ))),
                   verticalSpaceMedium,
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(300),
-                    child: Stack(
-                      children: <Widget>[
-                        Positioned.fill(
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: <Color>[
-                                  Color(0xFF0D47A1),
-                                  Color(0xFF1976D2),
-                                  Color(0xFF42A5F5),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.all(16.0),
-                            primary: Colors.white,
-                            textStyle: const TextStyle(fontSize: 20),
-                            minimumSize: Size(halfScreenWidth(context), 60),
-                          ),
-                          onPressed: () => model.doLogin(),
-                          child: (model.busy('loginButton'))
-                              ? ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                      maxHeight: 21.0, maxWidth: 21.0),
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : const Text('Login'),
-                        ),
-                      ],
-                    ),
-                  )
+                  if (!model.isSignup)
+                    CustomButton('Login', context,
+                        onPressed: () => model.doLogin()),
+                  if (model.isSignup)
+                    CustomButton('Signup', context,
+                        onPressed: () => model.doSignup()),
+                  verticalSpaceSmall,
+                  TextButton(
+                      child: Text((!model.isSignup)
+                          ? 'New User? Tap to register'
+                          : 'Already registered?  Tap here'),
+                      onPressed: () => model.toggleLoginSignup())
                 ],
               ),
             )),
