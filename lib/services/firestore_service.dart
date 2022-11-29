@@ -6,18 +6,18 @@ import 'package:hopsta_demo/models/station.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:stacked_firebase_auth/stacked_firebase_auth.dart';
 
+/// Provides all database functionality
 class HopstaFirestoreService {
   final FirebaseAuthenticationService _firebaseAuth =
       locator<FirebaseAuthenticationService>();
 
-  final CollectionReference _usersCollectionReference =
-      FirebaseFirestore.instance.collection("users");
-
-  final CollectionReference _stationsCollectionReference =
-      FirebaseFirestore.instance.collection("stations");
-
-  final CollectionReference _journeysCollectionReference =
-      FirebaseFirestore.instance.collection("journeys");
+  // Setup document references
+  final CollectionReference _stationsCollectionReference = FirebaseFirestore
+      .instance
+      .collection((kDebugMode) ? "stations_test" : "stations");
+  final CollectionReference _journeysCollectionReference = FirebaseFirestore
+      .instance
+      .collection((kDebugMode) ? "journeys_test" : "journeys");
 
   GeoFlutterFire geo = GeoFlutterFire();
 
@@ -26,6 +26,7 @@ class HopstaFirestoreService {
     if (kDebugMode) initMockData();
   }
 
+  /// As we're in Debug mode, check to see if the number of stations in the mock data below is larger than the database and upload any that are missing
   initMockData() async {
     List<TrainStation> mockData = [
       TrainStation(
@@ -50,63 +51,85 @@ class HopstaFirestoreService {
     }
   }
 
+  /// Get a list of stations within a [radius]km radius of [location]
   Future<List<DocumentSnapshot>> getStations(
       GeoFirePoint location, double radius) async {
-    var geoRef = geo.collection(collectionRef: _stationsCollectionReference);
-    var stations = geoRef.within(
-        center: location, radius: radius, field: 'location', strictMode: false);
+    try {
+      var geoRef = geo.collection(collectionRef: _stationsCollectionReference);
+      var stations = geoRef.within(
+          center: location,
+          radius: radius,
+          field: 'location',
+          strictMode: false);
 
-    return await stations.first.onError((error, stackTrace) => []);
+      return await stations.first.onError((error, stackTrace) => []);
+    } on Exception catch (e) {
+      return [];
+    }
   }
 
-  Future<String> createJourney(LatLng position) async {
-    var doc = _journeysCollectionReference.doc();
-    await doc.set({
-      'user': _firebaseAuth.currentUser?.uid,
-      'started': FieldValue.serverTimestamp(),
-      'positions': [
-        {
-          'lat': position.latitude,
-          'lon': position.longitude,
-          'date': Timestamp
-              .now() // Needs to be replaced with a server based time or ensure an offset is available for proper journey calculation
-        }
-      ]
-    });
-    return doc.id;
+  /// Create a new Journey in the database and add the starting [position]
+  Future<String?> createJourney(LatLng position) async {
+    try {
+      // Creates a new document reference with an auto-generated ID
+      var doc = _journeysCollectionReference.doc();
+      await doc.set({
+        'user': _firebaseAuth.currentUser?.uid,
+        'started': FieldValue.serverTimestamp(),
+        'positions': [
+          {
+            'lat': position.latitude,
+            'lon': position.longitude,
+            'date': Timestamp
+                .now() // Ideally should be replaced with a server based time or ensure an offset is available for proper journey calculation
+          }
+        ]
+      });
+      return doc.id;
+    } on Exception catch (e) {
+      return null;
+    }
   }
 
+  /// Save the supplied [position] to the current Journey
   setJourneyLocationPoint(String journeyId, LatLng position) async {
-    _journeysCollectionReference.doc(journeyId).update({
-      'positions': FieldValue.arrayUnion([
-        {
-          'lat': position.latitude,
-          'lon': position.longitude,
-          'date': Timestamp.now()
-        }
-      ])
-    });
+    try {
+      _journeysCollectionReference.doc(journeyId).update({
+        'positions': FieldValue.arrayUnion([
+          {
+            'lat': position.latitude,
+            'lon': position.longitude,
+            'date': Timestamp.now()
+          }
+        ])
+      });
+    } on Exception catch (e) {
+      return;
+    }
   }
 
+  /// Update the current Journey with an [ended] date using FieldValue.serverTimestamp()
   endJourney(String journeyId, {LatLng? position}) async {
-    await _journeysCollectionReference.doc(journeyId).update({
-      'ended': FieldValue.serverTimestamp(),
-      /* 'positions': FieldValue.arrayUnion([
-        {
-          'lat': position.latitude,
-          'lon': position.longitude,
-          'date': Timestamp.now()
-        }
-      ]) */
-    });
+    try {
+      await _journeysCollectionReference.doc(journeyId).update({
+        'ended': FieldValue.serverTimestamp(),
+      });
+    } on Exception catch (e) {
+      return;
+    }
   }
 
+  /// Get the current users Journey History
   Future<List<DocumentSnapshot>> getJourneyHistory() async {
-    var journeys = await _journeysCollectionReference
-        .where('user', isEqualTo: _firebaseAuth.currentUser?.uid)
-        .orderBy('started', descending: true)
-        .get();
+    try {
+      var journeys = await _journeysCollectionReference
+          .where('user', isEqualTo: _firebaseAuth.currentUser?.uid)
+          .orderBy('started', descending: true)
+          .get();
 
-    return journeys.docs;
+      return journeys.docs;
+    } on Exception catch (e) {
+      return [];
+    }
   }
 }

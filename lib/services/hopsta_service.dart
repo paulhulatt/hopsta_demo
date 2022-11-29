@@ -9,12 +9,14 @@ import 'package:hopsta_demo/services/firestore_service.dart';
 import 'package:hopsta_demo/services/location_service.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 
+/// Provides access to commonly used functions & values
 class HopstaService {
   final HopstaFirestoreService _firestoreService =
       locator<HopstaFirestoreService>();
   final HopstaLocationService _locationService =
       locator<HopstaLocationService>();
 
+  /// List of stations
   List<TrainStation> stations = [];
 
   bool initialised = false;
@@ -26,6 +28,7 @@ class HopstaService {
     initService();
   }
 
+  /// Provides the users curretn location
   Future<GeoFirePoint> get currentLocation async {
     var currentLoc = await BackgroundGeolocation.getCurrentPosition();
     return _firestoreService.geo.point(
@@ -53,6 +56,7 @@ class HopstaService {
     initialised = true;
   }
 
+  /// Increase the screen brightness to maximum for QR code scanning
   Future<void> maxBrightness() async {
     try {
       await ScreenBrightness().setScreenBrightness(1.0);
@@ -62,6 +66,7 @@ class HopstaService {
     }
   }
 
+  /// Reset the brightness back to original levels
   Future<void> resetBrightness() async {
     try {
       await ScreenBrightness().resetScreenBrightness();

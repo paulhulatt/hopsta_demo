@@ -9,6 +9,7 @@ import 'package:hopsta_demo/services/hopsta_service.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:stacked/stacked.dart';
 
+/// Provides data & methods for HistoryView
 class HistoryViewModel extends BaseViewModel {
   final HopstaFirestoreService _firestoreService =
       locator<HopstaFirestoreService>();
@@ -16,6 +17,7 @@ class HistoryViewModel extends BaseViewModel {
 
   List<TrainJourney> journeys = [];
 
+  /// Startup method to be called by onModelReady
   handleStartup() async {
     await getJourneys();
 
@@ -25,6 +27,7 @@ class HistoryViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  /// Retrieve this users journeys from the database
   Future getJourneys() async {
     var journeysData = await _firestoreService.getJourneyHistory();
 
@@ -37,6 +40,9 @@ class HistoryViewModel extends BaseViewModel {
     }
   }
 
+  /// Generate a Polyline for a set of LatLng points
+  ///
+  /// [points] should be a list of LatLng
   Polyline getPolyline(List<LatLng> points) {
     return Polyline(
       strokeWidth: 5.0,
@@ -45,24 +51,25 @@ class HistoryViewModel extends BaseViewModel {
     );
   }
 
+  /// Calculate the centre point between the first & last items in a List of LatLng
+  ///
+  /// [points] should be a List of LatLng
   LatLng computeCentre(List<LatLng> points) {
     double latitude = 0;
     double longitude = 0;
-    /* int n = points.length;
 
-    for (var point in points) {
-      latitude += point.latitude;
-      longitude += point.longitude;
-    } */
     latitude = points.first.latitude + points.last.latitude;
     longitude = points.first.longitude + points.last.longitude;
 
     return LatLng(latitude / 2, longitude / 2);
   }
 
-  LatLngBounds getLatLngBounds(List<LatLng> points) {
+  /// Calculate the bounding box for a list of locations and add padding
+  ///
+  /// Optional [pad] can be supplied, otherwise defaults to 0.2
+  LatLngBounds getLatLngBounds(List<LatLng> points, {double pad = 0.2}) {
     LatLngBounds bounds = LatLngBounds.fromPoints(points);
-    bounds.pad(0.2);
+    bounds.pad(pad);
 
     return bounds;
   }
